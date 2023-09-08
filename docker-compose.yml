@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: my_postgres_db_test
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data-volume:/var/lib/postgresql/data
+      - ./dump.sql:/docker-entrypoint-initdb.d/init.sql
+
+  sqlpad:
+    image: sqlpad/sqlpad:7.1.2
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      SQLPAD_ADMIN: admin
+      SQLPAD_ADMIN_PASSWORD: admin
+      SQLPAD_CONNECTIONS__pgdb__name: postgres
+      SQLPAD_CONNECTIONS__pgdb__driver: postgres
+      SQLPAD_CONNECTIONS__pgdb__host: postgres
+      SQLPAD_CONNECTIONS__pgdb__database: postgres
+      SQLPAD_CONNECTIONS__pgdb__username: postgres
+      SQLPAD_CONNECTIONS__pgdb__password: postgres
+    ports:
+      - 3000:3000
+
+
+volumes:
+  postgres-data-volume:
+
